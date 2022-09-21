@@ -1,0 +1,14 @@
+name: sdd
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - seaborn
+  - pandas
+  - numpy
+  - pytorch
+  - fastparquet
+  - jupyter
+  - requests
+  - opencv
+prefix: /opt/homebrew/Caskroom/miniforge/base/envs/sdd
