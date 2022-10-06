@@ -11,4 +11,6 @@ dependencies:
   - jupyter
   - requests
   - opencv
+  - scikit-learn
+  - scikit-image
 prefix: /opt/homebrew/Caskroom/miniforge/base/envs/sdd

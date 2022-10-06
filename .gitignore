@@ -132,3 +132,5 @@ dmypy.json
 /laion
 
 .DS_Store
+data
+cifar
