@@ -6,6 +6,7 @@ from src.util import get_device
 from torchvision import models
 from torch import nn
 import torch
+import json
 
 evaluation_datasets = ["evaluation/midjourney", "evaluation/beaches"]
 
@@ -43,8 +44,8 @@ def run_experiment(model_func, model_name: str, spectogram: bool, compress: bool
 
     # EVALUATION
     evaluation_results = {
-        'training_acc': training_acc,
-        'test_acc': test_acc,
+        'training_acc': float(training_acc.view(-1).cpu().detach().numpy()[0]),
+        'test_acc': float(test_acc.view(-1).cpu().detach().numpy()[0]),
     }
     for path in evaluation_datasets:
         # model = model_func()
@@ -55,8 +56,10 @@ def run_experiment(model_func, model_name: str, spectogram: bool, compress: bool
             path=path, batch_size=2, spectogram=spectogram, compress=compress, size=size
         )
         cm = evaluate_model(model, evaluation_loader, device)
-        evaluation_results[path + "_cm"] = cm
+        evaluation_results[path + "_cm"] = cm.tolist()
         accuacy = (cm[0][0] + cm[1][1]) / (cm[0][0] + cm[0][1] + cm[1][0] + cm[1][1])
         evaluation_results[path + "_accuracy"] = accuacy
 
-    print(evaluation_results)
+    with open(f"./{name}.json", "w") as f:
+        json.dump(evaluation_results, f, indent=4)
+    print("FINISHED EXPERIMENT FOR: ", name)
