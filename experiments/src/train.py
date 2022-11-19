@@ -13,6 +13,7 @@ def train_model(
     epochs: int,
     train_loader: DataLoader,
     test_loader: DataLoader,
+    inception: bool = False,
 ):
     for epoch in range(epochs):
         model.train()
@@ -24,26 +25,35 @@ def train_model(
             labels = labels.to(torch.float32).to(device)
 
             ## forward + backprop + loss
-            output, aux_output = model(images)
+            if inception:
+                output, aux_output = model(images)
 
-            output = torch.sigmoid(output)
-            aux_output = torch.sigmoid(aux_output)
+                output = torch.sigmoid(output)
+                aux_output = torch.sigmoid(aux_output)
 
-            loss1 = criterion(output, labels)
-            loss2 = criterion(aux_output, labels)
-            loss = loss1 + 0.4*loss2
+                loss1 = criterion(output, labels)
+                loss2 = criterion(aux_output, labels)
+                loss = loss1 + 0.4*loss2
+
+            else:
+                output = model(images)
+                output = torch.sigmoid(output)
+                loss = criterion(output, labels)
+
             optimizer.zero_grad()
             loss.backward()
 
             ## update model params
             optimizer.step()
-            # scheduler.step()
 
             train_running_loss += loss.detach().item()
             train_acc += get_accuracy(output, labels, labels.shape[0])
 
-        print('Epoch: %d | Loss: %.4f | Train Accuracy: %.2f' \
-                    %(epoch, train_running_loss / idx, train_acc / idx))
+        print('Epoch: {} | Training Loss: {:.6f} | Training Accuracy: {:.6f}'.format(
+            epoch + 1,
+            train_running_loss / len(train_loader),
+            train_acc / len(train_loader),
+        ))
 
     # Evaluate on test set
     model = model.eval()
@@ -54,7 +64,7 @@ def train_model(
         output = torch.sigmoid(model(images))
         test_acc += get_accuracy(output, labels, labels.shape[0])
 
-    training_accuacy = train_acc / idx
-    test_accuracy = test_acc / i
+    training_accuacy = train_acc / len(train_loader)
+    test_accuracy = test_acc / len(test_loader)
 
     return training_accuacy, test_accuracy

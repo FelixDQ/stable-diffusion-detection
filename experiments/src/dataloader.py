@@ -21,6 +21,7 @@ def load_dataset(
     train_dataset, test_dataset = random_split(
         dataset, [train_size, test_size], generator=torch.Generator().manual_seed(42)
     )
+    # Dont think this works, they use the same underlying dataset
     train_dataset.dataset.transform = training_transform
     test_dataset.dataset.transform = testing_transform
 

@@ -12,7 +12,7 @@ evaluation_datasets = ["evaluation/midjourney", "evaluation/beaches"]
 
 
 def run_experiment(model_func, model_name: str, spectogram: bool, compress: bool, size: int):
-    name = f"{model_name}" + "_spectogram" if spectogram else "" + "_compressed" if compress else ""
+    name = f"{model_name}" + ("_spectogram" if spectogram else "") + ("_compressed" if compress else "")
     print("RUNNING EXPERIMENT FOR: ", name)
     device = get_device()
 
@@ -26,19 +26,20 @@ def run_experiment(model_func, model_name: str, spectogram: bool, compress: bool
     )
 
     # TRAINING
-    model = model_func()
+    model, optimizer, epochs = model_func()
     model.to(device)
 
-    optimizer = torch.optim.RMSprop(model.parameters(), lr=1e-4)
+    inception = model_name == "inception"
 
     training_acc, test_acc = train_model(
         model=model,
         optimizer=optimizer,
         criterion=nn.BCELoss(),
         device=device,
-        epochs=17,
+        epochs=epochs,
         train_loader=train_loader,
         test_loader=test_loader,
+        inception=inception,
     )
     torch.save(model.state_dict(), f"./{name}.pt")
 
@@ -56,9 +57,10 @@ def run_experiment(model_func, model_name: str, spectogram: bool, compress: bool
             path=path, batch_size=2, spectogram=spectogram, compress=compress, size=size
         )
         cm = evaluate_model(model, evaluation_loader, device)
+        print(cm)
         evaluation_results[path + "_cm"] = cm.tolist()
-        accuacy = (cm[0][0] + cm[1][1]) / (cm[0][0] + cm[0][1] + cm[1][0] + cm[1][1])
-        evaluation_results[path + "_accuracy"] = accuacy
+        accuracy = (cm[0][0] + cm[1][1]) / (cm[0][0] + cm[0][1] + cm[1][0] + cm[1][1])
+        evaluation_results[path + "_accuracy"] = accuracy
 
     with open(f"./{name}.json", "w") as f:
         json.dump(evaluation_results, f, indent=4)
