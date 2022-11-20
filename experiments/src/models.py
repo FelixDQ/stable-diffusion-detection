@@ -10,25 +10,25 @@ def get_inception_model():
 
     optimizer = torch.optim.RMSprop(model.parameters(), lr=1e-4)
 
-    return model, optimizer, 17
+    return model, optimizer, 30
 
 def get_xception_model():
     model = timm.create_model('xception', pretrained=False, num_classes=1)
 
     optimizer = torch.optim.RMSprop(model.parameters(), lr=1e-4)
 
-    return model, optimizer, 17
+    return model, optimizer, 30
 
 def get_densenet_model():
     model = timm.create_model('densenet121', pretrained=False, num_classes=1)
 
     optimizer = torch.optim.RMSprop(model.parameters(), lr=1e-4)
 
-    return model, optimizer, 17
+    return model, optimizer, 30
 
 def get_vit_model():
     model = timm.create_model('vit_base_patch16_224', pretrained=False, num_classes=1)
 
-    optimizer = torch.optim.RMSprop(model.parameters(), lr=1e-4)
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-5)
 
-    return model, optimizer, 17
+    return model, optimizer, 30
