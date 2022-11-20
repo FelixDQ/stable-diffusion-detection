@@ -9,10 +9,21 @@ import torch
 import json
 
 evaluation_datasets = ["evaluation/midjourney", "evaluation/beaches"]
+# evaluation_datasets = [
+#     "/home/data_shares/sdd/datasets/beaches",
+#     "/home/data_shares/sdd/datasets/lexica",
+#     "/home/data_shares/sdd/datasets/midjourney",
+# ]
 
 
-def run_experiment(model_func, model_name: str, spectogram: bool, compress: bool, size: int):
-    name = f"{model_name}" + ("_spectogram" if spectogram else "") + ("_compressed" if compress else "")
+def run_experiment(
+    model_func, model_name: str, spectogram: bool, compress: bool, size: int
+):
+    name = (
+        f"{model_name}"
+        + ("_spectogram" if spectogram else "")
+        + ("_compressed" if compress else "")
+    )
     print("RUNNING EXPERIMENT FOR: ", name)
     device = get_device()
 
@@ -45,8 +56,8 @@ def run_experiment(model_func, model_name: str, spectogram: bool, compress: bool
 
     # EVALUATION
     evaluation_results = {
-        'training_acc': float(training_acc.view(-1).cpu().detach().numpy()[0]),
-        'test_acc': float(test_acc.view(-1).cpu().detach().numpy()[0]),
+        "training_acc": float(training_acc.view(-1).cpu().detach().numpy()[0]),
+        "test_acc": float(test_acc.view(-1).cpu().detach().numpy()[0]),
     }
     for path in evaluation_datasets:
         # model = model_func()
