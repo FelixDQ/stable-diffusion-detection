@@ -22,14 +22,14 @@ def load_dataset(
         dataset, [train_size, test_size], generator=torch.Generator().manual_seed(42)
     )
     # Dont think this works, they use the same underlying dataset
-    train_dataset.dataset.transform = training_transform
     test_dataset.dataset.transform = testing_transform
+    train_dataset.dataset.transform = training_transform
 
     train_loader = DataLoader(
-        train_dataset, batch_size=batch_size, shuffle=True, num_workers=0
+        train_dataset, batch_size=batch_size, shuffle=True, num_workers=4
     )
     test_loader = DataLoader(
-        test_dataset, batch_size=batch_size, shuffle=True, num_workers=0
+        test_dataset, batch_size=batch_size, shuffle=True, num_workers=4
     )
 
     return train_loader, test_loader
@@ -37,7 +37,7 @@ def load_dataset(
 def load_evaluation_dataset(path: str, batch_size: int, spectogram: bool, compress: bool, size: int):
     _, testing_transform = get_transforms(spectogram, compress, size)
     dataset = ImageFolder(path, transform=testing_transform)
-    image_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=0)
+    image_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=4)
     return image_loader
 
 

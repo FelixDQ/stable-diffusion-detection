@@ -8,12 +8,12 @@ from torch import nn
 import torch
 import json
 
-evaluation_datasets = ["evaluation/midjourney", "evaluation/beaches"]
-# evaluation_datasets = [
-#     "/home/data_shares/sdd/datasets/beaches",
-#     "/home/data_shares/sdd/datasets/lexica",
-#     "/home/data_shares/sdd/datasets/midjourney",
-# ]
+# evaluation_datasets = ["evaluation/midjourney", "evaluation/beaches"]
+evaluation_datasets = [
+    "/home/data_shares/sdd/datasets/beaches",
+    "/home/data_shares/sdd/datasets/lexica",
+    "/home/data_shares/sdd/datasets/midjourney",
+]
 
 
 def run_experiment(
@@ -28,9 +28,9 @@ def run_experiment(
     device = get_device()
 
     train_loader, test_loader = load_dataset(
-        path="data/stable_diffusion_detection.csv",
-        batch_size=2,
-        samples=8,
+        path="/home/data_shares/sdd/stable_diffusion_detection.csv",
+        batch_size=64,
+        samples=50000,
         spectogram=spectogram,
         compress=compress,
         size=size,

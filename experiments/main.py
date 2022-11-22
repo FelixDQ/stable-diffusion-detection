@@ -17,7 +17,7 @@ model_size = {
     "inception": 299,
     "xception": 299,
     "densenet": 299,
-    "vit": 299,
+    "vit": 224,
 }
 
 if __name__ == "__main__":
