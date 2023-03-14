@@ -1,4 +1,5 @@
 from src.util import get_accuracy
+from tqdm import tqdm
 
 import torch
 from torch import nn
@@ -20,7 +21,7 @@ def train_model(
         train_running_loss = 0.0
         train_acc = 0.0
 
-        for idx, (images, labels) in enumerate(train_loader):
+        for idx, (images, labels) in tqdm(enumerate(train_loader)):
             images = images.to(device)
             labels = labels.to(torch.float32).to(device)
 
@@ -61,7 +62,7 @@ def train_model(
     for i, (images, labels) in enumerate(test_loader):
         images = images.to(device)
         labels = labels.to(device)
-        output = torch.sigmoid(model(images))
+        output = torch.softmax(model(images))
         test_acc += get_accuracy(output, labels, labels.shape[0])
 
     training_accuacy = train_acc / len(train_loader)

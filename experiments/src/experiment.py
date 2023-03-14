@@ -28,17 +28,18 @@ def run_experiment(
         samples=50000,
         size=size,
     )
+    print("DATASET LOADED")
 
     # TRAINING
     model, optimizer, epochs = model_func()
     model.to(device)
 
     inception = model_name == "inception"
-
+    print("STARTING TRAINING")
     training_acc, test_acc = train_model(
         model=model,
         optimizer=optimizer,
-        criterion=nn.BCELoss(),
+        criterion=nn.CrossEntropyLoss(),
         device=device,
         epochs=epochs,
         train_loader=train_loader,

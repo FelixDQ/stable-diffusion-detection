@@ -31,9 +31,9 @@ def JPEGcompression(image):
     outputIoStream.seek(0)
     return Image.open(outputIoStream)
 
-def get_accuracy(logit, target, batch_size):
+def get_accuracy(logits, labels, batch_size):
     ''' Obtain accuracy for training round '''
-    corrects = (torch.round(logit).view(-1) == target.view(-1)).sum()
+    corrects = (logits.argmax(1) == labels).sum().item()
     accuracy = 100.0 * corrects/batch_size
     return accuracy
 
