@@ -1,4 +1,4 @@
-from src.dataloader import load_dataset, load_evaluation_dataset
+from src.dataloader import load_dataset
 from src.train import train_model
 from src.models import get_inception_model
 from src.evaluate import evaluate_model
