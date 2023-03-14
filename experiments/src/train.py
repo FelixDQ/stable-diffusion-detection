@@ -21,9 +21,9 @@ def train_model(
         train_running_loss = 0.0
         train_acc = 0.0
 
-        for idx, (images, labels) in tqdm(enumerate(train_loader)):
+        for idx, (images, labels) in enumerate(tqdm(train_loader)):
             images = images.to(device)
-            labels = labels.to(torch.float32).to(device)
+            labels = labels.reshape((labels.shape[0])).to(device)
 
             ## forward + backprop + loss
             if inception:
@@ -61,7 +61,7 @@ def train_model(
     test_acc = 0.0
     for i, (images, labels) in enumerate(test_loader):
         images = images.to(device)
-        labels = labels.to(device)
+        labels = labels.reshape((labels.shape[0])).to(device)
         output = torch.softmax(model(images))
         test_acc += get_accuracy(output, labels, labels.shape[0])
 
