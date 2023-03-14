@@ -10,43 +10,32 @@ import numpy as np
 
 
 def load_dataset(
-    path: str, batch_size: int, samples: int, spectogram: bool, compress: bool, size: int
+    real_path: str, fake_path: str, batch_size: int, samples: int, size: int
 ):
-    training_transform, testing_transform = get_transforms(spectogram, compress, size)
-    dataset = StableDiffusionDetectionDataset(
-        path, ".", transform=None, samples=samples
+    train_size = int(0.8 * samples)
+    test_size = samples - train_size
+
+    training_transform, testing_transform = get_transforms(size)
+
+    train_dataset = SDDDataset(
+        fake_path, real_path, transform=training_transform, samples=train_size
     )
-    train_size = int(0.8 * len(dataset))
-    test_size = len(dataset) - train_size
-    train_dataset, test_dataset = random_split(
-        dataset, [train_size, test_size], generator=torch.Generator().manual_seed(42)
+    test_dataset = SDDDataset(
+        fake_path, real_path, transform=testing_transform, samples=test_size, skip=train_size
     )
-    # Dont think this works, they use the same underlying dataset
-    test_dataset.dataset.transform = testing_transform
-    train_dataset.dataset.transform = training_transform
 
     train_loader = DataLoader(
-        train_dataset, batch_size=batch_size, shuffle=True, num_workers=4
+        train_dataset, batch_size=batch_size, shuffle=True, num_workers=16
     )
     test_loader = DataLoader(
-        test_dataset, batch_size=batch_size, shuffle=True, num_workers=4
+        test_dataset, batch_size=batch_size, shuffle=True, num_workers=16
     )
 
     return train_loader, test_loader
 
-def load_evaluation_dataset(path: str, batch_size: int, spectogram: bool, compress: bool, size: int):
-    _, testing_transform = get_transforms(spectogram, compress, size)
-    dataset = ImageFolder(path, transform=testing_transform)
-    image_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=4)
-    return image_loader
 
-
-def get_transforms(spectogram: bool, compress: bool, size:int):
+def get_transforms(size:int):
     transform = transforms.ToTensor()
-    if compress:
-        transform = transforms.Compose([transforms.Lambda(JPEGcompression), transform])
-    if spectogram:
-        transform = transforms.Compose([transform, transforms.Lambda(spec)])
     transform = transforms.Compose([transform, transforms.Resize((size, size))])
 
     training_transform = transforms.Compose(
@@ -56,28 +45,32 @@ def get_transforms(spectogram: bool, compress: bool, size:int):
 
     return training_transform, testing_transform
 
+def flat_map(f, xs):
+  ys = []
+  for x in xs:
+      ys.extend([f(x) for x in x])
+  return ys
 
-class StableDiffusionDetectionDataset(Dataset):
-    def __init__(
-        self,
-        csv_file,
-        root_dir,
-        transform=None,
-        samples=None,
-    ):
-        self.stable_diffusion_detection_frame = pd.read_csv(csv_file)
-        self.root_dir = root_dir
+def get_img_files(loc):
+    return sorted(flat_map(lambda x: os.path.join(x[0], x[1]), [[(root, file) for file in files if file.endswith('.png') or file.endswith('.jpg')] for root, dirs, files in os.walk(loc)]))
+
+class SDDDataset(Dataset):
+    def __init__(self, fake_loc, real_loc, transform=None, samples=None, skip=0):
+        import os
+
+
+        fake_files = get_img_files(fake_loc)
+        real_files = get_img_files(real_loc)
+
         self.transform = transform
 
         if samples is not None:
-            small_true = self.stable_diffusion_detection_frame[
-                self.stable_diffusion_detection_frame["label"] == 1
-            ][:samples]
-            small_false = self.stable_diffusion_detection_frame[
-                self.stable_diffusion_detection_frame["label"] == 0
-            ][:samples]
+            fake_files = fake_files[skip:skip+samples]
+            real_files = real_files[skip:skip+samples]
 
-            self.stable_diffusion_detection_frame = pd.concat((small_true, small_false))
+        df = pd.DataFrame({'file': fake_files + real_files, 'label': [0] * len(fake_files) + [1] * len(real_files)})
+
+        self.stable_diffusion_detection_frame = df.sample(frac=1).reset_index(drop=True)
 
     def __len__(self):
         return len(self.stable_diffusion_detection_frame)
@@ -86,9 +79,7 @@ class StableDiffusionDetectionDataset(Dataset):
         if torch.is_tensor(idx):
             idx = idx.tolist()
 
-        img_name = os.path.join(
-            self.root_dir, self.stable_diffusion_detection_frame.iloc[idx, 0]
-        )
+        img_name = os.path.join(self.stable_diffusion_detection_frame.iloc[idx, 0])
         image = Image.open(img_name)
         label = self.stable_diffusion_detection_frame.iloc[idx, 1]
         label = np.array([label])

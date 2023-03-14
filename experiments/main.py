@@ -22,18 +22,11 @@ model_size = {
 
 if __name__ == "__main__":
     try:
-        model, spectogram, compress = sys.argv[1:]
+        model = sys.argv[1]
         if model not in models:
             raise ValueError(f"Model {model} not found.")
 
-        if spectogram not in ["1", "0"]:
-            raise ValueError(f"Invalid spectogram value {spectogram}.")
 
-        if compress not in ["1", "0"]:
-            raise ValueError(f"Invalid compress value {compress}.")
-
-        spectogram = spectogram == "1"
-        compress = compress == "1"
 
     except Exception as e:
         logging.error(e)
@@ -44,4 +37,4 @@ if __name__ == "__main__":
         print("Example: python main.py inception 1 0")
         sys.exit(1)
 
-    run_experiment(models[model], model, spectogram=spectogram, compress=compress, size=model_size[model])
+    run_experiment(models[model], model, size=model_size[model])

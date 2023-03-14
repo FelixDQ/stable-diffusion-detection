@@ -8,31 +8,24 @@ from torch import nn
 import torch
 import json
 
-# evaluation_datasets = ["evaluation/midjourney", "evaluation/beaches"]
-evaluation_datasets = [
-    "/home/data_shares/sdd/datasets/beaches",
-    "/home/data_shares/sdd/datasets/lexica",
-    "/home/data_shares/sdd/datasets/midjourney",
-]
+REAL_LOC = "/home/data_shares/sdd/data"
+FAKE_LOC = "/home/data_shares/sdd/sdd2_1_results"
 
 
 def run_experiment(
-    model_func, model_name: str, spectogram: bool, compress: bool, size: int
+    model_func, model_name: str, size: int
 ):
     name = (
         f"{model_name}"
-        + ("_spectogram" if spectogram else "")
-        + ("_compressed" if compress else "")
     )
     print("RUNNING EXPERIMENT FOR: ", name)
     device = get_device()
 
     train_loader, test_loader = load_dataset(
-        path="/home/data_shares/sdd/stable_diffusion_detection.csv",
+        real_path=REAL_LOC,
+        fake_path=FAKE_LOC,
         batch_size=64,
         samples=50000,
-        spectogram=spectogram,
-        compress=compress,
         size=size,
     )
 
@@ -59,19 +52,6 @@ def run_experiment(
         "training_acc": float(training_acc.view(-1).cpu().detach().numpy()[0]),
         "test_acc": float(test_acc.view(-1).cpu().detach().numpy()[0]),
     }
-    for path in evaluation_datasets:
-        # model = model_func()
-        # model.load_state_dict(torch.load(f"./{name}.pt"))
-        # model.to(device)
-
-        evaluation_loader = load_evaluation_dataset(
-            path=path, batch_size=2, spectogram=spectogram, compress=compress, size=size
-        )
-        cm = evaluate_model(model, evaluation_loader, device)
-        print(cm)
-        evaluation_results[path + "_cm"] = cm.tolist()
-        accuracy = (cm[0][0] + cm[1][1]) / (cm[0][0] + cm[0][1] + cm[1][0] + cm[1][1])
-        evaluation_results[path + "_accuracy"] = accuracy
 
     with open(f"./{name}.json", "w") as f:
         json.dump(evaluation_results, f, indent=4)

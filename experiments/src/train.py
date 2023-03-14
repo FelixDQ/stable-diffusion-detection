@@ -28,8 +28,8 @@ def train_model(
             if inception:
                 output, aux_output = model(images)
 
-                output = torch.sigmoid(output)
-                aux_output = torch.sigmoid(aux_output)
+                output = torch.softmax(output, dim=1)
+                aux_output = torch.softmax(aux_output, dim=1)
 
                 loss1 = criterion(output, labels)
                 loss2 = criterion(aux_output, labels)
@@ -37,7 +37,7 @@ def train_model(
 
             else:
                 output = model(images)
-                output = torch.sigmoid(output)
+                output = torch.softmax(output, dim=1)
                 loss = criterion(output, labels)
 
             optimizer.zero_grad()
