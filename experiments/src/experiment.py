@@ -9,21 +9,30 @@ import torch
 import json
 
 REAL_LOC = "/home/data_shares/sdd/data"
-FAKE_LOC = "/home/data_shares/sdd/sdd2_1_results"
 
+SDD14_LOC = "/home/data_shares/sdd/sdd1_4_results"
+SDD20_LOC = "/home/data_shares/sdd/sdd2_0_results"
+SDD21_LOC = "/home/data_shares/sdd/sdd2_1_results"
+
+sdd_path = {
+    "1.4": SDD14_LOC,
+    "2.0": SDD20_LOC,
+    "2.1": SDD21_LOC,
+}
 
 def run_experiment(
-    model_func, model_name: str, size: int
+    model_func, model_name: str, size: int, sdd_version : str
 ):
     name = (
-        f"{model_name}"
+        f"{model_name}_{sdd_version}"
     )
+
     print("RUNNING EXPERIMENT FOR: ", name)
     device = get_device()
 
     train_loader, test_loader = load_dataset(
         real_path=REAL_LOC,
-        fake_path=FAKE_LOC,
+        fake_path=sdd_path[sdd_version],
         batch_size=64,
         samples=50000,
         size=size,

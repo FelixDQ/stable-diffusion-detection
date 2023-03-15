@@ -22,19 +22,18 @@ model_size = {
 
 if __name__ == "__main__":
     try:
-        model = sys.argv[1]
+        model, sdd_version = sys.argv[1:]
         if model not in models:
             raise ValueError(f"Model {model} not found.")
-
-
+        if sdd_version not in ["1.4", "2.0", "2.1"]:
+            raise ValueError(f"SDD version {sdd_version} not found.")
 
     except Exception as e:
         logging.error(e)
-        print("Usage: python main.py <model> <spectogram> <compress>")
+        print("Usage: python main.py <model> <sdd_version>")
         print(" model: inception, xception, densenet, vit")
-        print(" spectogram: 1, 0")
-        print(" compress: 1, 0")
-        print("Example: python main.py inception 1 0")
+        print(" sdd_version: 1.4, 2.0, 2.1")
+        print("Example: python main.py inception 2.1")
         sys.exit(1)
 
-    run_experiment(models[model], model, size=model_size[model])
+    run_experiment(models[model], model, size=model_size[model], sdd_version=sdd_version)
