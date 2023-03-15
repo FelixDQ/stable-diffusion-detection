@@ -38,8 +38,8 @@ def get_accuracy(logits, labels, batch_size):
     return accuracy
 
 def get_device():
-    # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    device = torch.device("cpu")
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    # device = torch.device("cpu")
     # if not torch.backends.mps.is_available():
     #     if not torch.backends.mps.is_built():
     #         print(
