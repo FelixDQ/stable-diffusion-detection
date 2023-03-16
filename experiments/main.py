@@ -33,7 +33,7 @@ if __name__ == "__main__":
         print(combinations_in_this_split)
         for model, sdd_version in combinations_in_this_split:
             print(f"Running {model} {sdd_version}")
-            #run_experiment(models[model], model, size=model_size[model], sdd_version=sdd_version)
+            run_experiment(models[model], model, size=model_size[model], sdd_version=sdd_version)
     else:
         try:
             model, sdd_version = sys.argv[1:]
