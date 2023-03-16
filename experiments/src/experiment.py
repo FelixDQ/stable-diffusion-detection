@@ -1,6 +1,5 @@
 from src.dataloader import load_dataset
 from src.train import train_model
-from src.models import get_inception_model
 from src.evaluate import evaluate_model
 from src.util import get_device
 from torchvision import models
