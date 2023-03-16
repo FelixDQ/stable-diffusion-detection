@@ -32,7 +32,8 @@ if __name__ == "__main__":
         combinations_in_this_split = splits[task_id-1]
         print(combinations_in_this_split)
         for model, sdd_version in combinations_in_this_split:
-            run_experiment(models[model], model, size=model_size[model], sdd_version=sdd_version)
+            print(f"Running {model} {sdd_version}")
+            #run_experiment(models[model], model, size=model_size[model], sdd_version=sdd_version)
     else:
         try:
             model, sdd_version = sys.argv[1:]
