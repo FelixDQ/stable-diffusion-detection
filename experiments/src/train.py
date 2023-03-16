@@ -14,8 +14,9 @@ def train_model(
     epochs: int,
     train_loader: DataLoader,
     test_loader: DataLoader,
-    inception: bool = False,
+    learning_rate: float,
 ):
+    scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=learning_rate, steps_per_epoch=len(train_loader), epochs=epochs)
     for epoch in range(epochs):
         model.train()
         train_running_loss = 0.0
@@ -25,27 +26,16 @@ def train_model(
             images = images.to(device)
             labels = labels.reshape((labels.shape[0])).to(device)
 
-            ## forward + backprop + loss
-            if inception:
-                output, aux_output = model(images)
-
-                output = torch.softmax(output, dim=1)
-                aux_output = torch.softmax(aux_output, dim=1)
-
-                loss1 = criterion(output, labels)
-                loss2 = criterion(aux_output, labels)
-                loss = loss1 + 0.4*loss2
-
-            else:
-                output = model(images)
-                output = torch.softmax(output, dim=1)
-                loss = criterion(output, labels)
+            output = model(images)
+            output = torch.softmax(output, dim=1)
+            loss = criterion(output, labels)
 
             optimizer.zero_grad()
             loss.backward()
 
             ## update model params
             optimizer.step()
+            scheduler.step()
 
             train_running_loss += loss.detach().item()
             train_acc += get_accuracy(output, labels, labels.shape[0])

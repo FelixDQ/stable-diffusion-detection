@@ -40,10 +40,9 @@ def run_experiment(
     print("DATASET LOADED")
 
     # TRAINING
-    model, optimizer, epochs = model_func()
+    model, optimizer, epochs, learning_rate = model_func()
     model.to(device)
 
-    inception = model_name == "inception"
     print("STARTING TRAINING")
     training_acc, test_acc = train_model(
         model=model,
@@ -53,7 +52,7 @@ def run_experiment(
         epochs=epochs,
         train_loader=train_loader,
         test_loader=test_loader,
-        inception=inception,
+        learning_rate=learning_rate,
     )
     torch.save(model.state_dict(), f"./{name}.pt")
 

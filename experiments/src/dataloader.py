@@ -21,7 +21,11 @@ def load_dataset(
         fake_path, real_path, transform=training_transform, samples=train_size
     )
     test_dataset = SDDDataset(
-        fake_path, real_path, transform=testing_transform, samples=test_size, skip=train_size
+        fake_path,
+        real_path,
+        transform=testing_transform,
+        samples=test_size,
+        skip=train_size,
     )
 
     train_loader = DataLoader(
@@ -34,30 +38,51 @@ def load_dataset(
     return train_loader, test_loader
 
 
-def get_transforms(size:int):
+def get_transforms(size: int):
     transform = transforms.ToTensor()
-    transform = transforms.Compose([transform, transforms.Resize((size, size))])
-
-    training_transform = transforms.Compose(
-        [transform, transforms.RandomHorizontalFlip()]
+    transform = transforms.Compose(
+        [
+            transform,
+            transforms.Resize((size, size)),
+            transforms.Normalize(
+                mean=(0.48145466, 0.4578275, 0.40821073),
+                std=(0.26862954, 0.26130258, 0.27577711),
+            ),
+        ]
     )
+
+    training_transform = transforms.Compose([transform])
     testing_transform = transform
 
     return training_transform, testing_transform
 
+
 def flat_map(f, xs):
-  ys = []
-  for x in xs:
-      ys.extend([f(x) for x in x])
-  return ys
+    ys = []
+    for x in xs:
+        ys.extend([f(x) for x in x])
+    return ys
+
 
 def get_img_files(loc):
-    return sorted(flat_map(lambda x: os.path.join(x[0], x[1]), [[(root, file) for file in files if file.endswith('.png') or file.endswith('.jpg')] for root, dirs, files in os.walk(loc)]))
+    return sorted(
+        flat_map(
+            lambda x: os.path.join(x[0], x[1]),
+            [
+                [
+                    (root, file)
+                    for file in files
+                    if file.endswith(".png") or file.endswith(".jpg")
+                ]
+                for root, dirs, files in os.walk(loc)
+            ],
+        )
+    )
+
 
 class SDDDataset(Dataset):
     def __init__(self, fake_loc, real_loc, transform=None, samples=None, skip=0):
         import os
-
 
         fake_files = get_img_files(fake_loc)
         real_files = get_img_files(real_loc)
@@ -65,10 +90,15 @@ class SDDDataset(Dataset):
         self.transform = transform
 
         if samples is not None:
-            fake_files = fake_files[skip:skip+samples]
-            real_files = real_files[skip:skip+samples]
+            fake_files = fake_files[skip : skip + samples]
+            real_files = real_files[skip : skip + samples]
 
-        df = pd.DataFrame({'file': fake_files + real_files, 'label': [0] * len(fake_files) + [1] * len(real_files)})
+        df = pd.DataFrame(
+            {
+                "file": fake_files + real_files,
+                "label": [0] * len(fake_files) + [1] * len(real_files),
+            }
+        )
 
         self.stable_diffusion_detection_frame = df.sample(frac=1).reset_index(drop=True)
 
