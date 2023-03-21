@@ -52,7 +52,7 @@ def train_model(
     for i, (images, labels) in enumerate(test_loader):
         images = images.to(device)
         labels = labels.reshape((labels.shape[0])).to(device)
-        output = torch.softmax(model(images))
+        output = torch.softmax(model(images), dim=1)
         test_acc += get_accuracy(output, labels, labels.shape[0])
 
     training_accuacy = train_acc / len(train_loader)
