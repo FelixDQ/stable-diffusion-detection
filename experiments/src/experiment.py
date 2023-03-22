@@ -57,8 +57,8 @@ def run_experiment(
 
     # EVALUATION
     evaluation_results = {
-        "training_acc": float(training_acc.view(-1).cpu().detach().numpy()[0]),
-        "test_acc": float(test_acc.view(-1).cpu().detach().numpy()[0]),
+        "training_acc": training_acc,
+        "test_acc": test_acc,
     }
 
     with open(f"./{name}.json", "w") as f:
