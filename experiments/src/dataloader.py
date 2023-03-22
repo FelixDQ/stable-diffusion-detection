@@ -10,12 +10,12 @@ import numpy as np
 
 
 def load_dataset(
-    real_path: str, fake_path: str, batch_size: int, samples: int, size: int
+    real_path: str, fake_path: str, batch_size: int, samples: int, size: int, extra_transforms=None
 ):
     train_size = int(0.8 * samples)
     test_size = samples - train_size
 
-    training_transform, testing_transform = get_transforms(size)
+    training_transform, testing_transform = get_transforms(size, extra_transforms)
 
     train_dataset = SDDDataset(
         fake_path, real_path, transform=training_transform, samples=train_size
@@ -38,8 +38,12 @@ def load_dataset(
     return train_loader, test_loader
 
 
-def get_transforms(size: int):
+def get_transforms(size: int, extra_transforms=None):
     transform = transforms.ToTensor()
+
+    if extra_transforms:
+        transform = transforms.Compose([transform, extra_transforms])
+
     transform = transforms.Compose(
         [
             transform,
