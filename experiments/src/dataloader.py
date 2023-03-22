@@ -42,7 +42,7 @@ def get_transforms(size: int, extra_transforms=None):
     transform = transforms.ToTensor()
 
     if extra_transforms:
-        transform = transforms.Compose([transform, extra_transforms])
+        transform = transforms.Compose([extra_transforms, transform])
 
     transform = transforms.Compose(
         [
