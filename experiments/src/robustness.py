@@ -8,8 +8,10 @@ from cleverhans.torch.attacks.projected_gradient_descent import (
     projected_gradient_descent,
 )
 from tqdm import tqdm
+import json
 
-CH_EPSILONS = [0.01, 0.02, 0.04, 0.08, 0.16, 0.32]
+# CH_EPSILONS = [0.01, 0.02, 0.04, 0.08, 0.16, 0.32]
+CH_EPSILONS = [0.01, 0.1]
 
 TRANSFORMS = {
     "pad3": transforms.Pad(padding=3),
@@ -109,3 +111,6 @@ def test_robustness(model_func, model_name: str, size: int, sdd_version: str):
         test_accuracy = test_acc / len(test_loader)
         print(f"TEST ACCURACY ON {eps}: ", test_accuracy)
         evaluation_results[eps] = test_accuracy
+
+    with open(f'./{name}_robustness.json', 'w') as f:
+        f.write(json.dumps(evaluation_results))

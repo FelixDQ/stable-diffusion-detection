@@ -1,5 +1,6 @@
 from src.models import get_convnext_model, get_xception_model, get_vit_model
 from src.experiment import run_experiment, sdd_path
+from src.robustness import test_robustness
 import logging
 logging.basicConfig(level=logging.ERROR)
 import warnings
@@ -33,7 +34,7 @@ if __name__ == "__main__":
         print(combinations_in_this_split)
         for model, sdd_version in combinations_in_this_split:
             print(f"Running {model} {sdd_version}")
-            run_experiment(models[model], model, size=model_size[model], sdd_version=sdd_version)
+            test_robustness(models[model], model, size=model_size[model], sdd_version=sdd_version)
     else:
         try:
             model, sdd_version = sys.argv[1:]
