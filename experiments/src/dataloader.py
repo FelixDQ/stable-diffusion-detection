@@ -10,12 +10,12 @@ import numpy as np
 
 
 def load_dataset(
-    real_path: str, fake_path: str, batch_size: int, samples: int, size: int, extra_transforms=None
+    real_path: str, fake_path: str, batch_size: int, samples: int, size: int, extra_transforms=None, no_transforms=False
 ):
     train_size = int(0.8 * samples)
     test_size = samples - train_size
 
-    training_transform, testing_transform = get_transforms(size, extra_transforms)
+    training_transform, testing_transform = get_transforms(size, extra_transforms, no_transforms)
 
     train_dataset = SDDDataset(
         fake_path, real_path, transform=training_transform, samples=train_size
@@ -38,22 +38,23 @@ def load_dataset(
     return train_loader, test_loader
 
 
-def get_transforms(size: int, extra_transforms=None):
+def get_transforms(size: int, extra_transforms=None, no_transforms=False):
     transform = transforms.ToTensor()
 
     if extra_transforms:
         transform = transforms.Compose([extra_transforms, transform])
 
-    transform = transforms.Compose(
-        [
-            transform,
-            transforms.Resize((size, size), antialias=None),
-            transforms.Normalize(
-                mean=(0.48145466, 0.4578275, 0.40821073),
-                std=(0.26862954, 0.26130258, 0.27577711),
-            ),
-        ]
-    )
+    if not no_transforms:
+        transform = transforms.Compose(
+            [
+                transform,
+                transforms.Resize((size, size), antialias=None),
+                transforms.Normalize(
+                    mean=(0.48145466, 0.4578275, 0.40821073),
+                    std=(0.26862954, 0.26130258, 0.27577711),
+                ),
+            ]
+        )
 
     training_transform = transforms.Compose([transform])
     testing_transform = transform
