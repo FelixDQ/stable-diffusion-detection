@@ -39,22 +39,26 @@ def load_dataset(
 
 
 def get_transforms(size: int, extra_transforms=None, no_transforms=False):
+    if no_transforms:
+        return transforms.Lambda(lambda x: x), transforms.Lambda(lambda x: x)
+
     transform = transforms.ToTensor()
 
     if extra_transforms:
         transform = transforms.Compose([extra_transforms, transform])
 
-    if not no_transforms:
-        transform = transforms.Compose(
-            [
-                transform,
-                transforms.Resize((size, size), antialias=None),
-                transforms.Normalize(
-                    mean=(0.48145466, 0.4578275, 0.40821073),
-                    std=(0.26862954, 0.26130258, 0.27577711),
-                ),
-            ]
-        )
+
+
+    transform = transforms.Compose(
+        [
+            transform,
+            transforms.Resize((size, size), antialias=None),
+            transforms.Normalize(
+                mean=(0.48145466, 0.4578275, 0.40821073),
+                std=(0.26862954, 0.26130258, 0.27577711),
+            ),
+        ]
+    )
 
     training_transform = transforms.Compose([transform])
     testing_transform = transform
