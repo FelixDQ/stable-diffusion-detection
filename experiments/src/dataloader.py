@@ -39,10 +39,10 @@ def load_dataset(
 
 
 def get_transforms(size: int, extra_transforms=None, no_transforms=False):
-    if no_transforms:
-        return transforms.Lambda(lambda x: x), transforms.Lambda(lambda x: x)
-
     transform = transforms.ToTensor()
+
+    if no_transforms:
+        return transform, transform
 
     if extra_transforms:
         transform = transforms.Compose([extra_transforms, transform])
