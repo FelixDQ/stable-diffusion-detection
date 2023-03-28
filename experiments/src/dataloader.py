@@ -38,8 +38,10 @@ def load_dataset(
     return train_loader, test_loader
 
 
-def get_transforms(size: int, extra_transforms=None, no_transforms=False):
+def get_transforms(size: int, extra_transforms=None, no_transforms=False, already_tensor=False):
     transform = transforms.ToTensor()
+    if already_tensor:
+        transform = transforms.Lambda(lambda x: x)
 
     if no_transforms:
         return transform, transform
