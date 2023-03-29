@@ -55,3 +55,6 @@ def get_device():
     # else:
     #     device = torch.device("mps")
     return device
+
+def round_t(x):
+    return torch.round(x, decimals=1)
