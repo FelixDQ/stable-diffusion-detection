@@ -1,6 +1,7 @@
 from io import BytesIO
 from PIL import Image
 import torch
+from torchmetrics.classification import BinaryConfusionMatrix
 
 def tfft(x):
     return torch.stack(
@@ -36,6 +37,13 @@ def get_accuracy(logits, labels, batch_size):
     corrects = (logits.argmax(1) == labels).sum().item()
     accuracy = 100.0 * corrects/batch_size
     return accuracy
+
+def get_confusion_matrix(logits, labels):
+    ''' Obtain confusion matrix for training round '''
+    preds = logits.argmax(1)
+    cm = BinaryConfusionMatrix().to(get_device())
+    return cm(preds, labels)
+
 
 def get_device():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
