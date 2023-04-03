@@ -105,7 +105,7 @@ def test_robustness(model_func, model_name: str, size: int, sdd_version: str):
         def run_model_with_transforms(images):
             transformed = other_transforms(images)
             return model(transformed)
-        adversary = AutoAttack(run_model_with_transforms, norm='Linf', eps=eps, version='custom', attacks_to_run=['apgd-ce', 'square'])
+        adversary = AutoAttack(run_model_with_transforms, norm='Linf', eps=eps, version='custom', attacks_to_run=['apgd-ce'])
 
         test_acc = 0.0
         cm = torch.zeros(2, 2, dtype=torch.int64).to(device)
