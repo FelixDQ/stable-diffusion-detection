@@ -113,7 +113,7 @@ def test_robustness(model_func, model_name: str, size: int, sdd_version: str):
             images = images.to(device)
             labels = labels.reshape((labels.shape[0])).to(device)
             x_pgm = adversary.run_standard_evaluation(images, labels, bs=32)
-            output = torch.softmax(model(x_pgm), dim=1)
+            output = torch.softmax(run_model_with_transforms(x_pgm), dim=1)
             test_acc += get_accuracy(output, labels, labels.shape[0])
             cm += get_confusion_matrix(output, labels)
         test_accuracy = test_acc / len(test_loader)
