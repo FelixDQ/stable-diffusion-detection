@@ -1,5 +1,7 @@
+from typing import Optional
 import torch
 import numpy as np
+import os
 from torchvision import transforms
 from src.dataloader import load_dataset, get_transforms
 from src.experiment import sdd_path, REAL_LOC
@@ -24,15 +26,21 @@ TRANSFORMS = {
 }
 
 
-def test_robustness(model_func, model_name: str, size: int, sdd_version: str):
+def test_robustness(model_func, model_name: str, size: int, sdd_version: str, model_path: Optional[str] = None, model_suffix: Optional[str] = None, file_extension: str = "pt"):
     name = f"{model_name}_{sdd_version}"
+    if model_suffix:
+        name += f"_{model_suffix}"
+
+    path = "."
+    if model_path:
+        path = model_path
 
     print("TESTING ROBUSTNESS FOR: ", name)
     device = get_device()
 
     print("LOADING MODEL")
     model, optimizer, epochs, learning_rate = model_func()
-    model.load_state_dict(torch.load(f"./{name}.pt"))
+    model.load_state_dict(torch.load(os.path.join(path, f"./{name}.{file_extension}")))
     model.to(device)
     model = model.eval()
 
