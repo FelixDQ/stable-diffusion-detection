@@ -25,7 +25,7 @@ model_size = {
 }
 
 tmp_test_models = {
-    "xception": get_xception_model,
+    "vit": get_vit_model,
 }
 
 tmp_test_transforms = [
