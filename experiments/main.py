@@ -2,6 +2,9 @@ from src.models import get_convnext_model, get_xception_model, get_vit_model
 from src.experiment import run_experiment, sdd_path
 from src.robustness import test_robustness
 import logging
+from torchvision import transforms
+
+from src.util import rand_noise, rand_pad
 
 logging.basicConfig(level=logging.ERROR)
 import warnings
@@ -23,6 +26,15 @@ model_size = {
     "convnext": 224,
     "vit": 224,
 }
+
+choice = transforms.RandomChoice([
+            transforms.RandomHorizontalFlip(),
+            transforms.Lambda(rand_pad),
+            transforms.GaussianBlur(kernel_size=(5, 9), sigma=(0.001, 5)),
+            transforms.Lambda(rand_noise),
+            transforms.RandomAffine(degrees=(0, 180), translate=(0, 0.15)),
+            transforms.RandomPerspective(distortion_scale=0.6, p=1.0)
+        ])
 
 tmp_test_models = {
     "vit": get_vit_model,
@@ -47,38 +59,38 @@ if __name__ == "__main__":
         and "SLURM_ARRAY_TASK_ID" in os.environ
         and "SLURM_ARRAY_TASK_COUNT" in os.environ
     ):
-        print("Starting array mode")
-        combinations = list(itertools.product(tmp_test_models.keys(), tmp_test_transforms))
-        task_id = int(os.environ["SLURM_ARRAY_TASK_ID"])
-        task_count = os.environ["SLURM_ARRAY_TASK_COUNT"]
-        splits = np.array_split(combinations, int(task_count))
-        print(combinations)
-        combinations_in_this_split = splits[task_id - 1]
-        print(combinations_in_this_split)
-        for model, transform in combinations_in_this_split:
-            print(f"Running {model} 1.4 {transform}")
-            test_robustness(
-                models[model],
-                model,
-                size=model_size[model],
-                sdd_version="1.4",
-                model_suffix=f"transforms_{transform}",
-                model_path="/home/data_shares/sdd/stable-diffusion-detection/saved_models",
-                file_extension="pth",
-            )
         # print("Starting array mode")
-        # combinations = list(itertools.product(models.keys(), sdd_path.keys()))
+        # combinations = list(itertools.product(tmp_test_models.keys(), tmp_test_transforms))
         # task_id = int(os.environ["SLURM_ARRAY_TASK_ID"])
         # task_count = os.environ["SLURM_ARRAY_TASK_COUNT"]
         # splits = np.array_split(combinations, int(task_count))
         # print(combinations)
         # combinations_in_this_split = splits[task_id - 1]
         # print(combinations_in_this_split)
-        # for model, sdd_version in combinations_in_this_split:
-        #     print(f"Running {model} {sdd_version}")
+        # for model, transform in combinations_in_this_split:
+        #     print(f"Running {model} 1.4 {transform}")
         #     test_robustness(
-        #         models[model], model, size=model_size[model], sdd_version=sdd_version
+        #         models[model],
+        #         model,
+        #         size=model_size[model],
+        #         sdd_version="1.4",
+        #         model_suffix=f"transforms_{transform}",
+        #         model_path="/home/data_shares/sdd/stable-diffusion-detection/saved_models",
+        #         file_extension="pth",
         #     )
+        print("Starting array mode")
+        combinations = list(itertools.product(models.keys(), sdd_path.keys()))
+        task_id = int(os.environ["SLURM_ARRAY_TASK_ID"])
+        task_count = os.environ["SLURM_ARRAY_TASK_COUNT"]
+        splits = np.array_split(combinations, int(task_count))
+        print(combinations)
+        combinations_in_this_split = splits[task_id - 1]
+        print(combinations_in_this_split)
+        for model, sdd_version in combinations_in_this_split:
+            print(f"Running {model} {sdd_version}")
+            run_experiment(
+                models[model], model, size=model_size[model], sdd_version=sdd_version, extra_transforms=choice, model_suffix=f"transforms_choice"
+            )
     else:
         try:
             model, sdd_version = sys.argv[1:]

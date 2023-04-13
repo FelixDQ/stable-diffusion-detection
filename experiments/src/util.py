@@ -2,6 +2,8 @@ from io import BytesIO
 from PIL import Image
 import torch
 from torchmetrics.classification import BinaryConfusionMatrix
+import random
+from torchvision import transforms
 
 def tfft(x):
     return torch.stack(
@@ -66,3 +68,9 @@ def get_device():
 
 def round_t(x):
     return torch.round(x, decimals=1)
+
+def rand_noise(x):
+    return x + torch.randn_like(x) * torch.rand(1) * 0.1
+
+def rand_pad(x):
+    return transforms.Pad(padding=random.randint(0, 50))(x)

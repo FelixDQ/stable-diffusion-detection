@@ -1,3 +1,4 @@
+from typing import Optional
 from src.dataloader import load_dataset
 from src.train import train_model
 from src.evaluate import evaluate_model
@@ -20,11 +21,13 @@ sdd_path = {
 }
 
 def run_experiment(
-    model_func, model_name: str, size: int, sdd_version : str
+    model_func, model_name: str, size: int, sdd_version : str, extra_transforms = None, name_suffix: Optional[str] = None
 ):
     name = (
         f"{model_name}_{sdd_version}"
     )
+    if name_suffix:
+        name += f"_{name_suffix}"
 
     print("RUNNING EXPERIMENT FOR: ", name)
     device = get_device()
@@ -34,6 +37,7 @@ def run_experiment(
         fake_path=sdd_path[sdd_version],
         batch_size=64,
         samples=50000,
+        extra_transforms=extra_transforms,
         size=size,
     )
     print("DATASET LOADED")
