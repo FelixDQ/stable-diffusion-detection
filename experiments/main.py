@@ -89,7 +89,7 @@ if __name__ == "__main__":
         for model, sdd_version in combinations_in_this_split:
             print(f"Running {model} {sdd_version}")
             run_experiment(
-                models[model], model, size=model_size[model], sdd_version=sdd_version, extra_transforms=choice, model_suffix=f"transforms_choice"
+                models[model], model, size=model_size[model], sdd_version=sdd_version, extra_transforms=choice, name_suffix=f"transforms_choice"
             )
     else:
         try:
