@@ -88,8 +88,8 @@ if __name__ == "__main__":
         print(combinations_in_this_split)
         for model, sdd_version in combinations_in_this_split:
             print(f"Running {model} {sdd_version}")
-            run_experiment(
-                models[model], model, size=model_size[model], sdd_version=sdd_version, extra_transforms=choice, name_suffix=f"transforms_choice"
+            test_robustness(
+                models[model], model, size=model_size[model], sdd_version=sdd_version, model_suffix=f"transforms_choice"
             )
     else:
         try:
