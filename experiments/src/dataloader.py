@@ -47,7 +47,7 @@ def get_transforms(size: int, extra_transforms=None, no_transforms=False, alread
         return transform, transform
 
     if extra_transforms:
-        transform = transforms.Compose([transform, extra_transforms])
+        transform = transforms.Compose([extra_transforms, transform])
 
 
 
