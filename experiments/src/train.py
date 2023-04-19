@@ -17,6 +17,7 @@ def train_model(
     learning_rate: float,
 ):
     scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=learning_rate, steps_per_epoch=len(train_loader), epochs=epochs)
+    torch.autograd.detect_anomaly(True)
     for epoch in range(epochs):
         model.train()
         train_running_loss = 0.0
