@@ -23,14 +23,16 @@ model_size = {
     "vit": 224,
 }
 
-choice = transforms.RandomChoice([
-            transforms.RandomHorizontalFlip(),
-            transforms.Lambda(rand_pad),
-            transforms.GaussianBlur(kernel_size=(5, 9), sigma=(0.001, 5)),
-            transforms.Lambda(rand_noise),
-            transforms.RandomAffine(degrees=(0, 180), translate=(0, 0.15)),
-            transforms.RandomPerspective(distortion_scale=0.6, p=1.0)
-        ])
+choice = transforms.RandomChoice(
+    [
+        transforms.RandomHorizontalFlip(),
+        transforms.Lambda(rand_pad),
+        transforms.GaussianBlur(kernel_size=(5, 9), sigma=(0.001, 5)),
+        transforms.Lambda(rand_noise),
+        transforms.RandomAffine(degrees=(0, 180), translate=(0, 0.15)),
+        transforms.RandomPerspective(distortion_scale=0.6, p=1.0),
+    ]
+)
 
 tmp_test_models = {
     "vit": get_vit_model,
@@ -85,7 +87,13 @@ if __name__ == "__main__":
         for model, sdd_version in combinations_in_this_split:
             print(f"Running {model} {sdd_version}")
             run_experiment(
-                models[model], model, size=model_size[model], sdd_version=sdd_version, extra_transforms=choice, name_suffix=f"transforms_choice")
+                models[model],
+                model,
+                size=model_size[model],
+                sdd_version=sdd_version,
+                extra_transforms=choice,
+                name_suffix=f"transforms_choice",
+            )
 
             # print("Testing robustness")
             # test_robustness(
@@ -108,5 +116,10 @@ if __name__ == "__main__":
             sys.exit(1)
 
         run_experiment(
-            models[model], model, size=model_size[model], sdd_version=sdd_version
+            models[model],
+            model,
+            size=model_size[model],
+            sdd_version=sdd_version,
+            extra_transforms=choice,
+            name_suffix=f"transforms_choice",
         )
