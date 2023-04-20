@@ -6,10 +6,6 @@ from torchvision import transforms
 
 from src.util import rand_noise, rand_pad
 
-logging.basicConfig(level=logging.ERROR)
-import warnings
-
-warnings.simplefilter(action="ignore", category=FutureWarning)
 import sys
 import itertools
 import numpy as np
