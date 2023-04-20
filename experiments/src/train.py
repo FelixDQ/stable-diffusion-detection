@@ -26,17 +26,16 @@ def train_model(
             images = images.to(device)
             labels = labels.reshape((labels.shape[0])).to(device)
 
+            if torch.isnan(images).any():
+                print("uh oh, nan in images. skipping batch...")
+                continue
+
             output = model(images)
             output = torch.softmax(output, dim=1)
             loss = criterion(output, labels)
 
             optimizer.zero_grad()
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0, error_if_nonfinite=True)
-            if torch.isnan(loss):
-                print("oh no: nan loss :/")
-                print("nan labels: ", torch.isnan(labels).any())
-                print("nan images: ", torch.isnan(images).any())
 
             ## update model params
             optimizer.step()
