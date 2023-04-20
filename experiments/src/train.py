@@ -32,6 +32,11 @@ def train_model(
 
             optimizer.zero_grad()
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0, error_if_nonfinite=True)
+            if torch.isnan(loss):
+                print("oh no: nan loss :/")
+                print("nan labels: ", torch.isnan(labels).any())
+                print("nan images: ", torch.isnan(images).any())
 
             ## update model params
             optimizer.step()
