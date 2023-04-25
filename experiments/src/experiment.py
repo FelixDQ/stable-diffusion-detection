@@ -35,7 +35,7 @@ def run_experiment(
     train_loader, test_loader = load_dataset(
         real_path=REAL_LOC,
         fake_path=sdd_path[sdd_version],
-        batch_size=64,
+        batch_size=32,
         samples=50000,
         extra_transforms=extra_transforms,
         no_transforms=adv_training,
