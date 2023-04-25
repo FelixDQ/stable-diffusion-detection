@@ -67,15 +67,16 @@ def train_model(
         ))
 
     # Evaluate on test set
-    model = model.eval()
-    test_acc = 0.0
-    for i, (images, labels) in enumerate(test_loader):
-        images = images.to(device)
-        labels = labels.reshape((labels.shape[0])).to(device)
-        output = torch.softmax(model(images), dim=1)
-        test_acc += get_accuracy(output, labels, labels.shape[0])
+    # model = model.eval()
+    # test_acc = 0.0
+    # for i, (images, labels) in enumerate(test_loader):
+    #     images = images.to(device)
+    #     labels = labels.reshape((labels.shape[0])).to(device)
+    #     output = torch.softmax(model(images), dim=1)
+    #     test_acc += get_accuracy(output, labels, labels.shape[0])
 
     training_accuacy = train_acc / len(train_loader)
-    test_accuracy = test_acc / len(test_loader)
+    # test_accuracy = test_acc / len(test_loader)
+    test_accuracy = 0.0
 
     return training_accuacy, test_accuracy
