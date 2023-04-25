@@ -7,7 +7,7 @@ import numpy as np
 from torch import nn
 from torch.optim.optimizer import Optimizer
 from torch.utils.data import DataLoader
-from cleverhans.torch.attacks import fast_gradient_method
+from cleverhans.torch.attacks.fast_gradient_method import fast_gradient_method
 
 def train_model(
     model: nn.Module,
@@ -23,7 +23,10 @@ def train_model(
 ):
     transforms, _ = get_transforms(size, already_tensor=True)
     def model_with_transforms(x):
-        return model(transforms(x))
+        # model.eval()
+        x_fgm = model(transforms(x))
+        # model.train()
+        return x_fgm
 
     scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=learning_rate, steps_per_epoch=len(train_loader), epochs=epochs)
     for epoch in range(epochs):
