@@ -21,7 +21,7 @@ sdd_path = {
 }
 
 def run_experiment(
-    model_func, model_name: str, size: int, sdd_version : str, extra_transforms = None, name_suffix: Optional[str] = None
+    model_func, model_name: str, size: int, sdd_version : str, extra_transforms = None, adv_training = False, name_suffix: Optional[str] = None
 ):
     name = (
         f"{model_name}_{sdd_version}"
@@ -38,6 +38,7 @@ def run_experiment(
         batch_size=64,
         samples=50000,
         extra_transforms=extra_transforms,
+        no_transforms=adv_training,
         size=size,
     )
     print("DATASET LOADED")
@@ -56,6 +57,8 @@ def run_experiment(
         train_loader=train_loader,
         test_loader=test_loader,
         learning_rate=learning_rate,
+        adv_training=adv_training,
+        size=size,
     )
     torch.save(model.state_dict(), f"./{name}.pt")
 

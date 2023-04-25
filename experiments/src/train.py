@@ -1,10 +1,13 @@
 from src.util import get_accuracy
+from src.dataloader import get_transforms
 from tqdm import tqdm
 
 import torch
+import numpy as np
 from torch import nn
 from torch.optim.optimizer import Optimizer
 from torch.utils.data import DataLoader
+from cleverhans.torch.attacks import fast_gradient_method
 
 def train_model(
     model: nn.Module,
@@ -15,7 +18,13 @@ def train_model(
     train_loader: DataLoader,
     test_loader: DataLoader,
     learning_rate: float,
+    size: int = 224,
+    adv_training: bool = False,
 ):
+    transforms, _ = get_transforms(size, already_tensor=True)
+    def model_with_transforms(x):
+        return model(transforms(x))
+
     scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=learning_rate, steps_per_epoch=len(train_loader), epochs=epochs)
     for epoch in range(epochs):
         model.train()
@@ -29,6 +38,9 @@ def train_model(
             if torch.isnan(images).any():
                 print("uh oh, nan in images. skipping batch...")
                 continue
+
+            if adv_training:
+                images = fast_gradient_method(model_with_transforms, images, 0.1, np.inf, targeted=False)
 
             output = model(images)
             output = torch.softmax(output, dim=1)
