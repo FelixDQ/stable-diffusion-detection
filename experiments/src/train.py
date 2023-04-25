@@ -23,9 +23,9 @@ def train_model(
 ):
     transforms, _ = get_transforms(size, already_tensor=True)
     def model_with_transforms(x):
-        # model.eval()
+        model.eval()
         x_fgm = model(transforms(x))
-        # model.train()
+        model.train()
         return x_fgm
 
     scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=learning_rate, steps_per_epoch=len(train_loader), epochs=epochs)
