@@ -66,8 +66,11 @@ def get_device():
     #     device = torch.device("mps")
     return device
 
-def round_t(x):
-    return torch.round(x, decimals=1)
+def squeeze(bits = 4):
+    round_value = 2 ** bits
+    def _squeeze(x):
+        return torch.round(x * round_value) / round_value
+    return _squeeze
 
 def rand_noise(x):
     return x + torch.randn_like(x) * torch.rand(1) * 0.1
