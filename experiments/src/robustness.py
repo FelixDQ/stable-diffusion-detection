@@ -117,13 +117,14 @@ def test_robustness(model_func, model_name: str, size: int, sdd_version: str, mo
 
         test_acc = 0.0
         cm = torch.zeros(2, 2, dtype=torch.int64).to(device)
-        for images, labels in tqdm(test_loader):
+        for i, (images, labels) in (pbar := tqdm(enumerate(test_loader))):
             images = images.to(device)
             labels = labels.reshape((labels.shape[0])).to(device)
             x_pgm = adversary.run_standard_evaluation(images, labels, bs=32)
             output = torch.softmax(run_model_with_transforms(x_pgm), dim=1)
             test_acc += get_accuracy(output, labels, labels.shape[0])
             cm += get_confusion_matrix(output, labels)
+            pbar.set_description(f"tentative acc: {test_acc / (i + 1)}")
         test_accuracy = test_acc / len(test_loader)
         print(f"TEST ACCURACY ON {eps}: ", test_accuracy)
         evaluation_results[f"linf_{eps}_acc"] = test_accuracy
