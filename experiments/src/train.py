@@ -1,6 +1,7 @@
 from src.util import get_accuracy
 from src.dataloader import get_transforms
 from tqdm import tqdm
+import random
 
 import torch
 import numpy as np
@@ -43,8 +44,9 @@ def train_model(
                 continue
 
             if adv_training:
-                images = fast_gradient_method(model_with_transforms, images, 0.1, np.inf, targeted=False)
-                images = transforms(images)
+                if random.random() < 0.5:
+                    images = fast_gradient_method(model_with_transforms, images, 0.1, np.inf, targeted=False)
+                    images = transforms(images)
 
             output = model(images)
             output = torch.softmax(output, dim=1)

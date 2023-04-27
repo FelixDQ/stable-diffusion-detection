@@ -53,8 +53,7 @@ tmp_test_transforms = [
 
 if __name__ == "__main__":
     if (
-        len(sys.argv) == 1
-        and "SLURM_ARRAY_TASK_ID" in os.environ
+        "SLURM_ARRAY_TASK_ID" in os.environ
         and "SLURM_ARRAY_TASK_COUNT" in os.environ
     ):
         # print("Starting array mode")
@@ -86,19 +85,27 @@ if __name__ == "__main__":
         print(combinations_in_this_split)
         for model, sdd_version in combinations_in_this_split:
             print(f"Running {model} {sdd_version}")
-            # run_experiment(
-            #     models[model],
-            #     model,
-            #     size=model_size[model],
-            #     sdd_version=sdd_version,
-            #     adv_training=True,
-            #     name_suffix=f"adversarial",
-            # )
-
-            print("Testing robustness")
-            test_robustness(
-                models[model], model, size=model_size[model], sdd_version=sdd_version, model_suffix=f"adversarial"
-            )
+            if len(sys.argv) == 1:
+                print("Testing robustness")
+                test_robustness(
+                    models[model], model, size=model_size[model], sdd_version=sdd_version, model_suffix=f"adversarial"
+                )
+            elif len(sys.argv == 2):
+                if sys.argv[1] == "test":
+                    print("Testing robustness")
+                    test_robustness(
+                        models[model], model, size=model_size[model], sdd_version=sdd_version, model_suffix=f"adversarial"
+                    )
+                elif sys.argv[1] == "train":
+                    print("Training")
+                    run_experiment(
+                        models[model],
+                        model,
+                        size=model_size[model],
+                        sdd_version=sdd_version,
+                        adv_training=True,
+                        name_suffix=f"adversarial",
+                    )
     else:
         try:
             model, sdd_version = sys.argv[1:]
