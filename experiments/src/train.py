@@ -71,6 +71,8 @@ def train_model(
     # test_acc = 0.0
     # for i, (images, labels) in enumerate(test_loader):
     #     images = images.to(device)
+    #     if adv_training:
+    #           images = transforms(images)
     #     labels = labels.reshape((labels.shape[0])).to(device)
     #     output = torch.softmax(model(images), dim=1)
     #     test_acc += get_accuracy(output, labels, labels.shape[0])
