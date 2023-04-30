@@ -90,7 +90,7 @@ if __name__ == "__main__":
                 test_robustness(
                     models[model], model, size=model_size[model], sdd_version=sdd_version, model_suffix=f"adversarial"
                 )
-            elif len(sys.argv == 2):
+            elif len(sys.argv) == 2:
                 if sys.argv[1] == "test":
                     print("Testing robustness")
                     test_robustness(
