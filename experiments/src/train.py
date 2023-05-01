@@ -46,7 +46,8 @@ def train_model(
             if adv_training:
                 if random.random() < 0.5:
                     images = fast_gradient_method(model_with_transforms, images, 0.1, np.inf, targeted=False)
-                    images = transforms(images)
+
+                images = transforms(images)
 
             output = model(images)
             output = torch.softmax(output, dim=1)
