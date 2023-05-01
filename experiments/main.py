@@ -52,10 +52,7 @@ tmp_test_transforms = [
 ]
 
 if __name__ == "__main__":
-    if (
-        "SLURM_ARRAY_TASK_ID" in os.environ
-        and "SLURM_ARRAY_TASK_COUNT" in os.environ
-    ):
+    if "SLURM_ARRAY_TASK_ID" in os.environ and "SLURM_ARRAY_TASK_COUNT" in os.environ:
         # print("Starting array mode")
         # combinations = list(itertools.product(tmp_test_models.keys(), tmp_test_transforms))
         # task_id = int(os.environ["SLURM_ARRAY_TASK_ID"])
@@ -88,13 +85,21 @@ if __name__ == "__main__":
             if len(sys.argv) == 1:
                 print("Testing robustness")
                 test_robustness(
-                    models[model], model, size=model_size[model], sdd_version=sdd_version, model_suffix=f"adversarial"
+                    models[model],
+                    model,
+                    size=model_size[model],
+                    sdd_version=sdd_version,
+                    model_suffix=f"adversarial",
                 )
             elif len(sys.argv) == 2:
                 if sys.argv[1] == "test":
                     print("Testing robustness")
                     test_robustness(
-                        models[model], model, size=model_size[model], sdd_version=sdd_version, model_suffix=f"adversarial"
+                        models[model],
+                        model,
+                        size=model_size[model],
+                        sdd_version=sdd_version,
+                        model_suffix=f"adversarial_rand",
                     )
                 elif sys.argv[1] == "train":
                     print("Training")
