@@ -45,7 +45,7 @@ def train_model(
 
             if adv_training:
                 EPS = 8/255
-                rand = (torch.rand(images.shape)-0.5)*(EPS*2).to(device)
+                rand = ((torch.rand(images.shape)-0.5)*(EPS*2)).to(device)
                 noise_images = fast_gradient_method(model_with_transforms, torch.clamp(images + rand, 0.0, 1.0), EPS, np.inf, targeted=False, clip_min=0.0, clip_max=1.0)
                 delta = noise_images - images
                 delta = torch.clamp(delta, -EPS, EPS)
