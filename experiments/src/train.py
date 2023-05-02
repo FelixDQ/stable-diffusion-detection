@@ -44,8 +44,12 @@ def train_model(
                 continue
 
             if adv_training:
-                images = fast_gradient_method(model_with_transforms, images, random.random() * 12/255, np.inf, targeted=False, clip_min=0.0, clip_max=1.0)
-
+                EPS = 8/255
+                rand = (torch.rand(images.shape)-0.5)*(EPS*2)
+                noise_images = fast_gradient_method(model_with_transforms, torch.clamp(images + rand, 0.0, 1.0), EPS, np.inf, targeted=False, clip_min=0.0, clip_max=1.0)
+                delta = noise_images - images
+                delta = torch.clamp(delta, -EPS, EPS)
+                images = torch.clamp(images + delta, 0.0, 1.0)
                 images = transforms(images)
 
             output = model(images)
