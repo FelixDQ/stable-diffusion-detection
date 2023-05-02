@@ -4,7 +4,7 @@ from src.robustness import test_robustness
 import logging
 from torchvision import transforms
 
-from src.util import rand_noise, rand_pad
+from src.util import rand_noise, rand_pad, squeeze
 
 import sys
 import itertools
@@ -110,6 +110,17 @@ if __name__ == "__main__":
                         sdd_version=sdd_version,
                         adv_training=True,
                         name_suffix=f"adversarial_rando",
+                    )
+                elif sys.argv[1] == "train2":
+                    print("Training")
+                    run_experiment(
+                        models[model],
+                        model,
+                        size=model_size[model],
+                        sdd_version=sdd_version,
+                        adv_training=False,
+                        name_suffix=f"squeezed",
+                        extra_transforms=transforms.Lambda(squeeze(4))
                     )
     else:
         try:
