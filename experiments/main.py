@@ -99,7 +99,7 @@ if __name__ == "__main__":
                         model,
                         size=model_size[model],
                         sdd_version=sdd_version,
-                        model_suffix=f"adversarial_rand",
+                        model_suffix=f"adversarial_rando",
                     )
                 elif sys.argv[1] == "train":
                     print("Training")
