@@ -109,7 +109,7 @@ if __name__ == "__main__":
                         size=model_size[model],
                         sdd_version=sdd_version,
                         adv_training=True,
-                        name_suffix=f"adversarial_rand",
+                        name_suffix=f"adversarial_rando",
                     )
     else:
         try:

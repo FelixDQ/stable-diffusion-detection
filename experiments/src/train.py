@@ -44,8 +44,7 @@ def train_model(
                 continue
 
             if adv_training:
-                if random.random() < 0.5:
-                    images = fast_gradient_method(model_with_transforms, images, 0.1, np.inf, targeted=False)
+                images = fast_gradient_method(model_with_transforms, images, random.random() * 12/255, np.inf, targeted=False, clip_min=0.0, clip_max=1.0)
 
                 images = transforms(images)
 
