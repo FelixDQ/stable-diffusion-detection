@@ -26,7 +26,7 @@ TRANSFORMS = {
 }
 
 
-def test_robustness(model_func, model_name: str, size: int, sdd_version: str, model_path: Optional[str] = None, model_suffix: Optional[str] = None, file_extension: str = "pt"):
+def test_robustness(model_func, model_name: str, size: int, sdd_version: str, model_path: Optional[str] = None, model_suffix: Optional[str] = None, file_extension: str = "pt", extra_transforms=None):
     name = f"{model_name}_{sdd_version}"
     if model_suffix:
         name += f"_{model_suffix}"
@@ -54,6 +54,7 @@ def test_robustness(model_func, model_name: str, size: int, sdd_version: str, mo
             batch_size=32,
             samples=50000,
             size=size,
+            extra_transforms=extra_transforms,
         )
         print("DATASET LOADED")
 
@@ -80,7 +81,7 @@ def test_robustness(model_func, model_name: str, size: int, sdd_version: str, mo
             batch_size=32,
             samples=50000,
             size=size,
-            extra_transforms=TRANSFORMS[t],
+            extra_transforms=TRANSFORMS[t] if extra_transforms is None else transforms.Compose([TRANSFORMS[t], extra_transforms])
         )
         print("DATASET LOADED")
         test_acc = 0.0
@@ -106,9 +107,10 @@ def test_robustness(model_func, model_name: str, size: int, sdd_version: str, mo
             batch_size=32,
             samples=50000,
             size=size,
+            no_transforms=True
         )
         print("DATASET LOADED")
-        other_transforms, _ = get_transforms(size=size, already_tensor=True)
+        other_transforms, _ = get_transforms(size=size, already_tensor=True, extra_transforms=extra_transforms)
 
         def run_model_with_transforms(images):
             transformed = other_transforms(images)
