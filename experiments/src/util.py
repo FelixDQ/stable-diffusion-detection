@@ -27,12 +27,13 @@ def spec(x):
     return tnorm(tfft(x).abs().log())
 
 def JPEGcompression(image):
+    image = transforms.ToPILImage()(image)
     QUALITY_FACTOR = 85
 
     outputIoStream = BytesIO()
     image.save(outputIoStream, "JPEG", quality=QUALITY_FACTOR)
     outputIoStream.seek(0)
-    return Image.open(outputIoStream)
+    return transforms.ToTensor()(Image.open(outputIoStream))
 
 def get_accuracy(logits, labels, batch_size):
     ''' Obtain accuracy for training round '''
