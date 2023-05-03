@@ -118,6 +118,16 @@ if __name__ == "__main__":
                         sdd_version=sdd_version,
                         model_suffix="transforms_choice"
                     )
+                elif sys.argv[1] == "test_squeezed":
+                    print("Testing robustness")
+                    test_robustness(
+                        models[model],
+                        model,
+                        size=model_size[model],
+                        sdd_version=sdd_version,
+                        model_suffix="squeezed",
+                        extra_transforms=transforms.Lambda(squeeze(4))
+                    )
                 elif sys.argv[1] == "train":
                     print("Training")
                     run_experiment(
