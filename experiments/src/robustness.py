@@ -129,7 +129,7 @@ def test_robustness(model_func, model_name: str, size: int, sdd_version: str, mo
             pbar.set_description(f"tentative acc: {test_acc / (i + 1)}")
             if i >= 20:
                 break
-        test_accuracy = test_acc / len(test_loader)
+        test_accuracy = test_acc / 21
         print(f"TEST ACCURACY ON {eps}: ", test_accuracy)
         evaluation_results[f"linf_{eps}_acc"] = test_accuracy
         evaluation_results[f"linf_{eps}_cm"] = cm.tolist()
