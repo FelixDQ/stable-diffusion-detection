@@ -56,7 +56,7 @@ if __name__ == "__main__":
     print("Starting array mode")
     combinations = list(itertools.product(models.keys(), sdd_path.keys(), [None, "adversarial_rando", "transforms_choice", "squeezed"]))
     print(combinations)
-    for model, sdd_version, model_suffix, model_suffix in combinations:
+    for model, sdd_version, model_suffix in combinations:
         print(f"Running {model} {sdd_version}")
         print("Testing robustness")
         test_robustness(
