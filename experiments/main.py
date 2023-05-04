@@ -52,124 +52,18 @@ tmp_test_transforms = [
 ]
 
 if __name__ == "__main__":
-    if "SLURM_ARRAY_TASK_ID" in os.environ and "SLURM_ARRAY_TASK_COUNT" in os.environ:
-        # print("Starting array mode")
-        # combinations = list(itertools.product(tmp_test_models.keys(), tmp_test_transforms))
-        # task_id = int(os.environ["SLURM_ARRAY_TASK_ID"])
-        # task_count = os.environ["SLURM_ARRAY_TASK_COUNT"]
-        # splits = np.array_split(combinations, int(task_count))
-        # print(combinations)
-        # combinations_in_this_split = splits[task_id - 1]
-        # print(combinations_in_this_split)
-        # for model, transform in combinations_in_this_split:
-        #     print(f"Running {model} 1.4 {transform}")
-        #     test_robustness(
-        #         models[model],
-        #         model,
-        #         size=model_size[model],
-        #         sdd_version="1.4",
-        #         model_suffix=f"transforms_{transform}",
-        #         model_path="/home/data_shares/sdd/stable-diffusion-detection/saved_models",
-        #         file_extension="pth",
-        #     )
-        print("Starting array mode")
-        combinations = list(itertools.product(models.keys(), sdd_path.keys()))
-        task_id = int(os.environ["SLURM_ARRAY_TASK_ID"])
-        task_count = os.environ["SLURM_ARRAY_TASK_COUNT"]
-        splits = np.array_split(combinations, int(task_count))
-        print(combinations)
-        combinations_in_this_split = splits[task_id - 1]
-        print(combinations_in_this_split)
-        for model, sdd_version in combinations_in_this_split:
-            print(f"Running {model} {sdd_version}")
-            if len(sys.argv) == 1:
-                print("Testing robustness")
-                test_robustness(
-                    models[model],
-                    model,
-                    size=model_size[model],
-                    sdd_version=sdd_version,
-                    model_suffix=f"adversarial",
-                )
-            elif len(sys.argv) == 2:
-                if sys.argv[1] == "test":
-                    print("Testing robustness")
-                    test_robustness(
-                        models[model],
-                        model,
-                        size=model_size[model],
-                        sdd_version=sdd_version,
-                        model_suffix=f"adversarial_rando",
-                    )
-                elif sys.argv[1] == "test_baseline":
-                    print("Testing robustness")
-                    test_robustness(
-                        models[model],
-                        model,
-                        size=model_size[model],
-                        sdd_version=sdd_version
-                    )
-                elif sys.argv[1] == "test_choice":
-                    print("Testing robustness")
-                    test_robustness(
-                        models[model],
-                        model,
-                        size=model_size[model],
-                        sdd_version=sdd_version,
-                        model_suffix="transforms_choice"
-                    )
-                elif sys.argv[1] == "test_squeezed":
-                    print("Testing robustness")
-                    test_robustness(
-                        models[model],
-                        model,
-                        size=model_size[model],
-                        sdd_version=sdd_version,
-                        model_suffix="squeezed",
-                        extra_transforms=transforms.Lambda(squeeze(4))
-                    )
-                elif sys.argv[1] == "train":
-                    print("Training")
-                    run_experiment(
-                        models[model],
-                        model,
-                        size=model_size[model],
-                        sdd_version=sdd_version,
-                        adv_training=True,
-                        name_suffix=f"adversarial_rando",
-                    )
-                elif sys.argv[1] == "train2":
-                    print("Training")
-                    run_experiment(
-                        models[model],
-                        model,
-                        size=model_size[model],
-                        sdd_version=sdd_version,
-                        adv_training=False,
-                        name_suffix=f"squeezed",
-                        extra_transforms=transforms.Lambda(squeeze(4))
-                    )
-    else:
-        try:
-            model, sdd_version = sys.argv[1:]
-            if model not in models:
-                raise ValueError(f"Model {model} not found.")
-            if sdd_version not in ["1.4", "2.0", "2.1"]:
-                raise ValueError(f"SDD version {sdd_version} not found.")
 
-        except Exception as e:
-            logging.error(e)
-            print("Usage: python main.py <model> <sdd_version>")
-            print(" model: xception, convnext, vit")
-            print(" sdd_version: 1.4, 2.0, 2.1")
-            print("Example: python main.py xception 2.1")
-            sys.exit(1)
-
-        run_experiment(
+    print("Starting array mode")
+    combinations = list(itertools.product(models.keys(), sdd_path.keys(), [None, "adversarial_rando", "transforms_choice", "squeezed"]))
+    print(combinations)
+    for model, sdd_version, model_suffix, model_suffix in combinations:
+        print(f"Running {model} {sdd_version}")
+        print("Testing robustness")
+        test_robustness(
             models[model],
             model,
             size=model_size[model],
             sdd_version=sdd_version,
-            extra_transforms=choice,
-            name_suffix=f"transforms_choice",
+            model_suffix=model_suffix,
         )
+
