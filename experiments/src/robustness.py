@@ -45,57 +45,6 @@ def test_robustness(model_func, model_name: str, size: int, sdd_version: str, mo
     model = model.eval()
 
     evaluation_results = {}
-    print("TESTING PERFORMANCE ON OTHER SD VERSIONS")
-    for sdv in sdd_path.keys():
-        print("TESTING ON SD VERSION: ", sdv)
-        train_loader, test_loader = load_dataset(
-            real_path=REAL_LOC,
-            fake_path=sdd_path[sdv],
-            batch_size=32,
-            samples=50000,
-            size=size,
-            extra_transforms=extra_transforms,
-        )
-        print("DATASET LOADED")
-
-        test_acc = 0.0
-        cm = torch.zeros(2, 2, dtype=torch.int64).to(device)
-        for images, labels in tqdm(test_loader):
-            images = images.to(device)
-            labels = labels.reshape((labels.shape[0])).to(device)
-            output = torch.softmax(model(images), dim=1)
-            test_acc += get_accuracy(output, labels, labels.shape[0])
-            cm += get_confusion_matrix(output, labels)
-        test_accuracy = test_acc / len(test_loader)
-        print(f"TEST ACCURACY ON {sdv}: ", test_accuracy)
-        evaluation_results[f"{sdv}_acc"] = test_accuracy
-        evaluation_results[f"{sdv}_cm"] = cm.tolist()
-
-    print()
-    print("TESTING PERFORMANCE ON TRANSFORMS")
-    for t in TRANSFORMS.keys():
-        print("TESTING ON: ", t)
-        train_loader, test_loader = load_dataset(
-            real_path=REAL_LOC,
-            fake_path=sdd_path[sdd_version],
-            batch_size=32,
-            samples=50000,
-            size=size,
-            extra_transforms=TRANSFORMS[t] if extra_transforms is None else transforms.Compose([TRANSFORMS[t], extra_transforms])
-        )
-        print("DATASET LOADED")
-        test_acc = 0.0
-        cm = torch.zeros(2, 2, dtype=torch.int64).to(device)
-        for images, labels in tqdm(test_loader):
-            images = images.to(device)
-            labels = labels.reshape((labels.shape[0])).to(device)
-            output = torch.softmax(model(images), dim=1)
-            test_acc += get_accuracy(output, labels, labels.shape[0])
-            cm += get_confusion_matrix(output, labels)
-        test_accuracy = test_acc / len(test_loader)
-        print(f"TEST ACCURACY ON {t}: ", test_accuracy)
-        evaluation_results[f"{t}_acc"] = test_accuracy
-        evaluation_results[f"{t}_cm"] = cm.tolist()
 
     print()
     print("TESTING PERFORMANCE ON AUTOATTACK")
@@ -127,10 +76,14 @@ def test_robustness(model_func, model_name: str, size: int, sdd_version: str, mo
             test_acc += get_accuracy(output, labels, labels.shape[0])
             cm += get_confusion_matrix(output, labels)
             pbar.set_description(f"tentative acc: {test_acc / (i + 1)}")
-        test_accuracy = test_acc / len(test_loader)
+
+            if i >= 5:
+                break
+
+        test_accuracy = test_acc / 6
         print(f"TEST ACCURACY ON {eps}: ", test_accuracy)
         evaluation_results[f"linf_{eps}_acc"] = test_accuracy
         evaluation_results[f"linf_{eps}_cm"] = cm.tolist()
 
-    with open(f'./{name}_square_robustness.json', 'w') as f:
+    with open(f'./{name}_square_partial_robustness.json', 'w') as f:
         f.write(json.dumps(evaluation_results))

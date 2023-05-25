@@ -52,35 +52,11 @@ tmp_test_transforms = [
 ]
 
 if __name__ == "__main__":
-    if "SLURM_ARRAY_TASK_ID" in os.environ and "SLURM_ARRAY_TASK_COUNT" in os.environ:
-        # print("Starting array mode")
-        # combinations = list(itertools.product(tmp_test_models.keys(), tmp_test_transforms))
-        # task_id = int(os.environ["SLURM_ARRAY_TASK_ID"])
-        # task_count = os.environ["SLURM_ARRAY_TASK_COUNT"]
-        # splits = np.array_split(combinations, int(task_count))
-        # print(combinations)
-        # combinations_in_this_split = splits[task_id - 1]
-        # print(combinations_in_this_split)
-        # for model, transform in combinations_in_this_split:
-        #     print(f"Running {model} 1.4 {transform}")
-        #     test_robustness(
-        #         models[model],
-        #         model,
-        #         size=model_size[model],
-        #         sdd_version="1.4",
-        #         model_suffix=f"transforms_{transform}",
-        #         model_path="/home/data_shares/sdd/stable-diffusion-detection/saved_models",
-        #         file_extension="pth",
-        #     )
-        print("Starting array mode")
+    if True:
+
         combinations = list(itertools.product(models.keys(), sdd_path.keys()))
-        task_id = int(os.environ["SLURM_ARRAY_TASK_ID"])
-        task_count = os.environ["SLURM_ARRAY_TASK_COUNT"]
-        splits = np.array_split(combinations, int(task_count))
-        print(combinations)
-        combinations_in_this_split = splits[task_id - 1]
-        print(combinations_in_this_split)
-        for model, sdd_version in combinations_in_this_split:
+
+        for model, sdd_version in combinations:
             print(f"Running {model} {sdd_version}")
             if len(sys.argv) == 1:
                 print("Testing robustness")
