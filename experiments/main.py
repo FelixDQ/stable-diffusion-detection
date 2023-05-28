@@ -35,7 +35,7 @@ choice = transforms.RandomChoice(
 )
 
 tmp_test_models = {
-    "vit": get_vit_model,
+    "convnext": get_convnext_model,
 }
 
 tmp_test_transforms = [
