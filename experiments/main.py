@@ -54,7 +54,7 @@ tmp_test_transforms = [
 if __name__ == "__main__":
     if True:
 
-        combinations = list(itertools.product(models.keys(), sdd_path.keys()))
+        combinations = list(itertools.product(tmp_test_models.keys(), sdd_path.keys()))
 
         for model, sdd_version in combinations:
             print(f"Running {model} {sdd_version}")
