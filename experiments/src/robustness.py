@@ -115,7 +115,7 @@ def test_robustness(model_func, model_name: str, size: int, sdd_version: str, mo
         def run_model_with_transforms(images):
             transformed = other_transforms(images)
             return model(transformed)
-        adversary = AutoAttack(run_model_with_transforms, norm='Linf', eps=eps, version='custom', attacks_to_run=['square'])
+        adversary = AutoAttack(run_model_with_transforms, norm='Linf', eps=eps, version='custom', attacks_to_run=['apgd-ce'])
 
         test_acc = 0.0
         cm = torch.zeros(2, 2, dtype=torch.int64).to(device)
@@ -132,5 +132,5 @@ def test_robustness(model_func, model_name: str, size: int, sdd_version: str, mo
         evaluation_results[f"linf_{eps}_acc"] = test_accuracy
         evaluation_results[f"linf_{eps}_cm"] = cm.tolist()
 
-    with open(f'./{name}_square_robustness.json', 'w') as f:
+    with open(f'./{name}_robustness.json', 'w') as f:
         f.write(json.dumps(evaluation_results))
